@@ -75,14 +75,13 @@ enum Result {
 let result4 = Result.failure
 result4
 
-// Enum assoicated values
+// Enum associated values
 enum Activity {
     case bored
     case running(destination: String)
     case talking(topic: String)
     case singing(volume: Int)
 }
-
 
 let talking = Activity.talking(topic: "Football")
 
