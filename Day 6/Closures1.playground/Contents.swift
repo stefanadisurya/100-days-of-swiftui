@@ -14,7 +14,7 @@ let standing = { (place: String) in
 
 standing("London") // closure doesn't using parameter labels
 
-// Retuning values from a closure
+// Returning values from a closure
 let sitting = { (place: String) -> String in
     return "I'm going to sit in \(place)"
 }
