@@ -48,6 +48,7 @@ func username(for id: Int) -> String? {
 let user = username(for: 15) ?? "Anonymous"
 print(user)
 print()
+
 // Optional chaining -> the rest of after the optional value will be ignored the optional have no value
 let names = ["John", "Paul", "George", "Ringo"]
 let beatle = names.first?.uppercased()
