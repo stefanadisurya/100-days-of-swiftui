@@ -7,6 +7,21 @@
 
 import SwiftUI
 
+struct FlagImage: View {
+    var countryList = [String]()
+    var index = 0
+    
+    var body: some View {
+        Image(countryList[index])
+            .resizable()
+            .renderingMode(.original)
+            .frame(width: 300, height: 150, alignment: .center)
+            .clipShape(Capsule())
+            .overlay(Capsule().stroke(Color.black, lineWidth: 1))
+            .shadow(color: .black, radius: 2)
+    }
+}
+
 struct ContentView: View {
     @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"].shuffled()
     @State private var correctAnswer = Int.random(in: 0 ... 2)
@@ -56,13 +71,7 @@ struct ContentView: View {
                     Button(action: {
                         self.flagTapped(number)
                     }) {
-                        Image(self.countries[number])
-                            .resizable()
-                            .renderingMode(.original)
-                            .frame(width: 300, height: 150, alignment: .center)
-                            .clipShape(Capsule())
-                            .overlay(Capsule().stroke(Color.black, lineWidth: 1))
-                            .shadow(color: .black, radius: 2)
+                        FlagImage(countryList: countries, index: number)
                     }
                 }
                 Spacer()

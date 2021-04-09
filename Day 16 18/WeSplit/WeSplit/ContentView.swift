@@ -14,6 +14,8 @@ struct ContentView: View {
     @State private var tipPercentage = 2 // index
     let tipPercentages = [10, 15, 20, 25, 0]
     
+    @State private var isZeroTip = false
+    
     var totalPerPerson: Double {
         let peopleCount = Double((Double(peopleNum) ?? 0) + 2)
         let tipSelection = Double(tipPercentages[tipPercentage])
@@ -59,6 +61,13 @@ struct ContentView: View {
                             Text("\(self.tipPercentages[$0])%")
                         }
                     }
+                    .onReceive([self.tipPercentage].publisher.first(), perform: { (value) in
+                        if value == 4 {
+                            isZeroTip = true
+                        } else {
+                            isZeroTip = false
+                        }
+                    })
                     .pickerStyle(SegmentedPickerStyle())
                 }
                 
@@ -68,6 +77,7 @@ struct ContentView: View {
                 
                 Section(header: Text("Total Check Amount")) {
                     Text("\(totalAmount, specifier: "%.2f")")
+                        .foregroundColor(isZeroTip ? .red : .black)
                 }
             }
             .navigationBarTitle("WeSplit")
