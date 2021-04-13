@@ -45,12 +45,6 @@ struct ContentView: View {
                     TextField("Amount", text: $checkAmount)
                         .keyboardType(.decimalPad)
                     
-//                    Picker("Number of people", selection: $numberOfPeople) {
-//                        ForEach(2 ..< 100) {
-//                            Text("\($0) people")
-//                        }
-//                    }
-                    
                     TextField("Number of people", text: $peopleNum)
                         .keyboardType(.numberPad)
                 }
