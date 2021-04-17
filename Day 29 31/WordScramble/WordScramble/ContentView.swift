@@ -16,6 +16,20 @@ struct ContentView: View {
     @State private var errorMessage = ""
     @State private var showingError = false
     
+    var result: Int {
+        var totalScore = 0
+        
+        if usedWords.count > 0 {
+            for words in usedWords {
+                totalScore += words.count
+            }
+        } else {
+            totalScore = 0
+        }
+        
+        return totalScore
+    }
+    
     func addNewWord() {
         let answer = newWord.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
         
@@ -33,6 +47,11 @@ struct ContentView: View {
             return
         }
         
+        guard isSame(word: answer) else {
+            wordError(title: "Root word detected", message: "You can't use the root word!")
+            return
+        }
+        
         guard isReal(word: answer) else {
             wordError(title: "Word not possible", message: "That isn't a real word!")
             return
@@ -43,6 +62,8 @@ struct ContentView: View {
     }
     
     func startGame() {
+        usedWords.removeAll()
+        
         if let startWordsURL = Bundle.main.url(forResource: "start", withExtension: "txt") {
             if let startWords = try? String(contentsOf: startWordsURL) {
                 let allWords = startWords.components(separatedBy: "\n")
@@ -74,12 +95,24 @@ struct ContentView: View {
         return true
     }
     
+    func isSame(word: String) -> Bool {
+        if word == rootWord {
+            return false
+        }
+        
+        return true
+    }
+    
     func isReal(word: String) -> Bool {
         let checker = UITextChecker()
         let range = NSRange(location: 0, length: word.utf16.count)
-        let misspleedRange = checker.rangeOfMisspelledWord(in: word, range: range, startingAt: 0, wrap: false, language: "en")
+        let misspeledRange = checker.rangeOfMisspelledWord(in: word, range: range, startingAt: 0, wrap: false, language: "en")
         
-        return misspleedRange.location == NSNotFound
+        if word.count < 3 {
+            return false
+        }
+        
+        return misspeledRange.location == NSNotFound
     }
     
     func wordError(title: String, message: String) {
@@ -100,8 +133,21 @@ struct ContentView: View {
                     Image(systemName: "\($0.count).circle")
                     Text($0)
                 }
+                
+                Form {
+                    Section(header: Text("Word count")) {
+                        Text("\(usedWords.count)")
+                    }
+                    
+                    Section(header: Text("Score")) {
+                        Text("\(result)")
+                    }
+                }
             }
             .navigationBarTitle(rootWord)
+            .navigationBarItems(leading: Button(action: startGame) {
+                Image(systemName: "arrow.clockwise")
+            })
             .onAppear(perform: startGame)
             .alert(isPresented: $showingError) {
                 Alert(title: Text(errorTitle), message: Text(errorMessage), dismissButton: .default(Text("OK")))
