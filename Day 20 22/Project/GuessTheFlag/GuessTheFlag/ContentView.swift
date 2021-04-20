@@ -22,25 +22,45 @@ struct FlagImage: View {
     }
 }
 
+extension View {
+    @ViewBuilder
+    func `if`<Transform: View>(_ condition: Bool, transform: (Self) -> Transform) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
+        }
+    }
+}
+
 struct ContentView: View {
     @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"].shuffled()
     @State private var correctAnswer = Int.random(in: 0 ... 2)
+    
+    @State private var animationAmount = 0.0
     
     @State private var showingScore = false
     @State private var scoreTitle = ""
     @State private var scoreDescription = ""
     @State private var score = 0
     
+    @State private var isCorrect = false
     
     func flagTapped(_ number: Int) {
         if number == correctAnswer {
             scoreTitle = "Correct"
             score += 1
             scoreDescription = "Your score is \(score)"
+            self.isCorrect = true
         } else {
             scoreTitle = "Wrong"
             score += 0
             scoreDescription = "That's the flag of \(countries[number])"
+            self.isCorrect = false
+        }
+        
+        withAnimation {
+            self.animationAmount += 360
         }
         
         showingScore = true
@@ -73,6 +93,8 @@ struct ContentView: View {
                     }) {
                         FlagImage(countryList: countries, index: number)
                     }
+                    .if(isCorrect) { $0.rotation3DEffect(.degrees(animationAmount), axis: (x: 0, y: 1, z: 0)) }
+                    .if(!isCorrect) { $0.rotation3DEffect(.degrees(animationAmount), axis: (x: 1, y: 0, z: 0)) }
                 }
                 Spacer()
                 
