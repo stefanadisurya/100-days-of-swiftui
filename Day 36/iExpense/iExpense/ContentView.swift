@@ -17,30 +17,75 @@ struct ContentView: View {
     
     var body: some View {
         NavigationView {
+            
             List {
-                ForEach(expenses.items) { item in
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text(item.name)
-                                .font(.headline)
+                Section(header: Text("Info")) {
+                    VStack {
+                        HStack {
+                            Circle()
+                                .frame(width: 8, height: 8, alignment: .center)
+                                .foregroundColor(.green)
                             
-                            Text(item.type)
+                            Text("Amount under $10  ")
+                                .padding(.leading, 4)
                         }
                         
-                        Spacer()
+                        HStack {
+                            Circle()
+                                .frame(width: 8, height: 8, alignment: .center)
+                                .foregroundColor(.orange)
+                            
+                            Text("Amount under $100")
+                                .padding(.leading, 4)
+                        }
                         
-                        Text("$\(item.amount)")
+                        HStack {
+                            Circle()
+                                .frame(width: 8, height: 8, alignment: .center)
+                                .foregroundColor(.red)
+                            
+                            Text("Amount above $100")
+                                .padding(.leading, 4)
+                        }
                     }
                 }
-                .onDelete(perform: removeitems)
+                
+                Section(header: Text("Expenses")) {
+                    ForEach(expenses.items) { item in
+                        HStack {
+                            Circle()
+                                .frame(width: 8, height: 8, alignment: .center)
+                                .foregroundColor(item.amount < 10 ? .green : (item.amount < 100 ? .orange : .red))
+                            
+                            VStack(alignment: .leading) {
+                                Text(item.name)
+                                    .font(.headline)
+                                
+                                Text(item.type)
+                                    .font(.subheadline)
+                            }
+                            .padding(.leading, 4)
+                            
+                            Spacer()
+                            
+                            Text("$\(item.amount)")
+                        }
+                    }
+                    .onDelete(perform: removeitems)
+                }
+                
             }
             .listStyle(InsetGroupedListStyle())
             .navigationBarTitle("iExpense")
             .navigationBarItems(trailing:
-                Button(action: {
-                    self.showingAddExpense = true
-                }) {
-                    Image(systemName: "plus")
+                HStack {
+                    Button(action: {
+                        self.showingAddExpense = true
+                    }) {
+                        Image(systemName: "plus")
+                    }
+                    
+                    EditButton()
                 }
             )
         }

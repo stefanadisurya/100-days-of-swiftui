@@ -12,6 +12,8 @@ struct AddView: View {
     @State private var type = "Personal"
     @State private var amount = ""
     
+    @State private var showingAlert = false
+    
     @ObservedObject var expenses: Expenses
     
     @Environment(\.presentationMode) var presentationMode
@@ -38,8 +40,13 @@ struct AddView: View {
                     let item = ExpenseItem(name: self.name, type: self.type, amount: actualAmount)
                     self.expenses.items.append(item)
                     self.presentationMode.wrappedValue.dismiss()
+                } else {
+                    showingAlert = true
                 }
             })
+            .alert(isPresented: $showingAlert) {
+                Alert(title: Text("Invalid"), message: Text("Please fill the form with the correct format"), dismissButton: .default(Text("OK")))
+            }
         }
     }
 }
