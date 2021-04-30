@@ -7,50 +7,47 @@
 
 import SwiftUI
 
-struct Triangle: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        
-        path.move(to: CGPoint(x: 200, y: 100))
-        path.addLine(to: CGPoint(x: 100, y: 300))
-        path.addLine(to: CGPoint(x: 300, y: 300))
-        path.addLine(to: CGPoint(x: 200, y: 100))
-        
-        return path
-    }
-}
+struct ColorCyclingCircle: View {
+    var amount = 0.0
+    var steps = 100
 
-struct Arc: InsettableShape {
-    var startAngle: Angle
-    var endAngle: Angle
-    var clockwise: Bool
-    
-    var insetAmount: CGFloat = 0
-    
-    func inset(by amount: CGFloat) -> some InsettableShape {
-        var arc = self
-        arc.insetAmount += amount
-        return arc
+    var body: some View {
+        ZStack {
+            ForEach(0..<steps) { value in
+                Circle()
+                    .inset(by: CGFloat(value))
+//                    .strokeBorder(self.color(for: value, brightness: 1), lineWidth: 2)
+                    .strokeBorder(LinearGradient(gradient: Gradient(colors: [
+                        self.color(for: value, brightness: 1),
+                        self.color(for: value, brightness: 0.5)
+                    ]), startPoint: .top, endPoint: .bottom), lineWidth: 2)
+            }
+        }
+        .drawingGroup()
     }
-    
-    func path(in rect: CGRect) -> Path {
-        let rotationAdjusment = Angle.degrees(90)
-        let modifiedStart = startAngle - rotationAdjusment
-        let modifiedEnd = endAngle - rotationAdjusment
-        
-        var path = Path()
-        path.addArc(center: CGPoint(x: rect.midX, y: rect.midY), radius: rect.width / 2 - insetAmount, startAngle: modifiedStart, endAngle: modifiedEnd, clockwise: !clockwise)
-        
-        return path
+
+    func color(for value: Int, brightness: Double) -> Color {
+        var targetHue = Double(value) / Double(self.steps) + self.amount
+
+        if targetHue > 1 {
+            targetHue -= 1
+        }
+
+        return Color(hue: targetHue, saturation: 1, brightness: brightness)
     }
 }
 
 struct ContentView: View {
-    var body: some View {
-        Arc(startAngle: .degrees(0), endAngle: .degrees(110), clockwise: true)
-            .stroke(Color.blue, lineWidth: 10)
-            .frame(width: 300, height: 300)
-    }
+    @State private var colorCycle = 0.0
+
+        var body: some View {
+            VStack {
+                ColorCyclingCircle(amount: self.colorCycle)
+                    .frame(width: 300, height: 300)
+
+                Slider(value: $colorCycle)
+            }
+        }
 }
 
 struct ContentView_Previews: PreviewProvider {
