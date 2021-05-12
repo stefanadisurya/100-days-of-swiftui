@@ -56,6 +56,10 @@ class Order: ObservableObject, Codable {
             return false
         }
         
+        if name == " " || streetAddress == " " || city == " " || zip == " " {
+            return false
+        }
+        
         return true
     }
     
